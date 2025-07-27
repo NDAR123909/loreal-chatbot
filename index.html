@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>L'Oréal Beauty Assistant</title>
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+/* —— basic reset —— */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* —— body + fonts —— */
+body {
+  font-family: "Montserrat", Arial, Helvetica, sans-serif;
+  color: #333;
+  display: flex;
+  justify-content: center;
+  background: linear-gradient(135deg, #f8f4f0 0%, #ffffff 100%);
+  min-height: 100vh;
+}
+
+.page-wrapper {
+  width: 90%;
+  max-width: 900px;
+}
+
+/* header */
+.site-header {
+  text-align: center;
+  padding: 30px 0;
+  background: linear-gradient(135deg, #000000 0%, #2c2c2c 100%);
+  margin: 20px 0;
+  border-radius: 12px;
+  color: white;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.logo-container {
+  margin-bottom: 15px;
+}
+
+.loreal-logo {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.logo-tagline {
+  font-size: 0.9rem;
+  color: #e0a458;
+  font-weight: 300;
+  margin-top: 5px;
+}
+
+.site-title {
+  font-size: 1.4rem;
+  font-weight: 500;
+  margin-top: 10px;
+  color: #f0f0f0;
+}
+
+/* chat window */
+.chatbox {
+  margin: 40px 0;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+.chat-window {
+  height: 450px;
+  padding: 25px;
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-y: auto;
+  background: #ffffff;
+}
+
+/* messages */
+.message-container {
+  margin-bottom: 20px;
+}
+
+.user-question {
+  background: #f8f4f0;
+  padding: 12px 16px;
+  border-radius: 18px 18px 4px 18px;
+  margin-bottom: 12px;
+  border-left: 4px solid #e0a458;
+  font-weight: 500;
+  color: #2c2c2c;
+}
+
+.message-bubble {
+  max-width: 85%;
+  padding: 14px 18px;
+  border-radius: 18px;
+  margin-bottom: 8px;
+  position: relative;
+  word-wrap: break-word;
+}
+
+.message-bubble.user {
+  background: linear-gradient(135deg, #e0a458 0%, #d4961a 100%);
+  color: white;
+  margin-left: auto;
+  border-radius: 18px 18px 4px 18px;
+  font-weight: 500;
+}
+
+.message-bubble.ai {
+  background: #f8f9fa;
+  color: #2c2c2c;
+  border: 1px solid #e9ecef;
+  border-radius: 18px 18px 18px 4px;
+  margin-right: auto;
+}
+
+.message-meta {
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
+  text-align: right;
+}
+
+.message-bubble.ai .message-meta {
+  text-align: left;
+}
+
+/* input row */
+.chat-form {
+  display: flex;
+  gap: 12px;
+  padding: 20px;
+  background: #f8f4f0;
+  border-top: 1px solid #e9ecef;
+}
+
+.chat-form input {
+  flex: 1;
+  padding: 14px 18px;
+  border: 2px solid #e9ecef;
+  font-size: 16px;
+  border-radius: 25px;
+  background: white;
+  transition: all 0.3s ease;
+}
+
+.chat-form input:focus {
+  outline: none;
+  border-color: #e0a458;
+  box-shadow: 0 0 0 3px rgba(224, 164, 88, 0.1);
+}
+
+.chat-form button {
+  font-size: 16px;
+  background: linear-gradient(135deg, #e0a458 0%, #d4961a 100%);
+  color: #fff;
+  border: none;
+  padding: 14px;
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(224, 164, 88, 0.3);
+}
+
+.chat-form button .material-icons {
+  font-size: 20px;
+}
+
+.chat-form button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(224, 164, 88, 0.4);
+}
+
+.chat-form button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(224, 164, 88, 0.3);
+}
+
+.chat-form button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* loading indicator */
+.typing-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #666;
+  font-style: italic;
+  margin: 10px 0;
+}
+
+.typing-dots {
+  display: flex;
+  gap: 4px;
+}
+
+.typing-dots span {
+  width: 6px;
+  height: 6px;
+  background: #e0a458;
+  border-radius: 50%;
+  animation: typing 1.4s infinite;
+}
+
+.typing-dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing-dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes typing {
+  0%, 60%, 100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+  30% {
+    transform: translateY(-10px);
+    opacity: 1;
+  }
+}
+
+/* visually hidden */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* footer */
+.site-footer {
+  margin: 40px 0;
+  text-align: center;
+  font-size: 14px;
+  color: #666;
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.site-footer nav {
+  margin-top: 15px;
+}
+
+.site-footer a {
+  margin: 0 12px;
+  color: #e0a458;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.site-footer a:hover {
+  color: #d4961a;
+}
+
+/* responsive design */
+@media (max-width: 768px) {
+  .page-wrapper {
+    width: 95%;
+  }
+  
+  .message-bubble {
+    max-width: 95%;
+  }
+  
+  .chat-form {
+    padding: 15px;
+  }
+  
+  .chat-form input {
+    font-size: 16px; /* prevents zoom on iOS */
+  }
+}
+
+/* custom scrollbar */
+.chat-window::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chat-window::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.chat-window::-webkit-scrollbar-thumb {
+  background: #e0a458;
+  border-radius: 3px;
+}
+
+.chat-window::-webkit-scrollbar-thumb:hover {
+  background: #d4961a;
+}
+    </style>
+  </head>
+
+  <body>
+    <div class="page-wrapper">
+      <!------- Header / Branding ------->
+      <header class="site-header">
+        <div class="logo-container">
+          <div class="loreal-logo">L'Oréal</div>
+          <div class="logo-tagline">Because You're Worth It</div>
+        </div>
+        <h1 class="site-title">Beauty Assistant</h1>
+      </header>
+
+      <!------- Chat Area ------->
+      <main>
+        <section class="chatbox">
+          <div id="chatWindow" class="chat-window">
+            <!-- messages will be appended here via JS -->
+          </div>
+
+          <form id="chatForm" class="chat-form">
+            <label for="userInput" class="visually-hidden">Message</label>
+            <input
+              id="userInput"
+              name="userInput"
+              type="text"
+              placeholder="Ask me about L'Oréal products, routines, or beauty tips..."
+              autocomplete="off"
+              required
+            />
+            <button type="submit" id="sendBtn">
+              <span class="material-icons">send</span>
+              <span class="visually-hidden">Send</span>
+            </button>
+          </form>
+        </section>
+      </main>
+
+      <!------- Footer Links ------->
+      <footer class="site-footer">
+        <p>&copy; 2025 L'Oréal. All rights reserved.</p>
+        <nav>
+          <a href="https://www.loreal.com/en/privacy-policy/" target="_blank">Privacy Policy</a>
+          <a href="https://www.loreal.com/en/terms-of-use/" target="_blank">Terms of Use</a>
+          <a href="https://www.loreal.com/en/contact/" target="_blank">Contact</a>
+        </nav>
+      </footer>
+    </div>
+
+    <script>
+/* DOM elements */
+const chatForm = document.getElementById("chatForm");
+const userInput = document.getElementById("userInput");
+const chatWindow = document.getElementById("chatWindow");
+const sendBtn = document.getElementById("sendBtn");
+
+// Conversation history for context (LevelUp feature)
+let conversationHistory = [
+  {
+    role: "system",
+    content: `You are L'Oréal's AI Beauty Assistant, a knowledgeable and friendly expert in L'Oréal's extensive range of beauty products including makeup, skincare, haircare, and fragrances. Your mission is to help users discover the perfect products and create personalized beauty routines.
+
+IMPORTANT GUIDELINES:
+- ONLY discuss L'Oréal products, beauty routines, makeup techniques, skincare advice, haircare tips, fragrance recommendations, and general beauty-related topics
+- If asked about non-beauty topics, politely redirect: "I'm here to help with L'Oréal beauty products and routines! How can I assist you with your beauty needs today?"
+- Provide specific product recommendations from L'Oréal's portfolio when possible
+- Ask follow-up questions to better understand the user's needs (skin type, concerns, preferences)
+- Keep responses conversational, helpful, and enthusiastic about beauty
+- Remember user preferences and details shared during the conversation
+
+You represent L'Oréal's commitment to making beauty accessible to everyone. Be inclusive, supportive, and remember that everyone deserves to feel beautiful.`
+  }
+];
+
+// User's name for personalization (LevelUp feature)
+let userName = null;
+
+// Set initial message
+function addInitialMessage() {
+  const welcomeMessage = createMessageElement(
+    "👋 Hello! I'm your L'Oréal Beauty Assistant. I'm here to help you discover amazing products and create the perfect beauty routine just for you. What would you like to know about today?",
+    'ai'
+  );
+  chatWindow.appendChild(welcomeMessage);
+  scrollToBottom();
+}
+
+// Create message element with bubble design (LevelUp feature)
+function createMessageElement(content, type, showQuestion = null) {
+  const messageContainer = document.createElement('div');
+  messageContainer.className = 'message-container';
+
+  // Display user question above AI response (LevelUp feature)
+  if (showQuestion && type === 'ai') {
+    const questionElement = document.createElement('div');
+    questionElement.className = 'user-question';
+    questionElement.textContent = `You asked: ${showQuestion}`;
+    messageContainer.appendChild(questionElement);
+  }
+
+  const messageBubble = document.createElement('div');
+  messageBubble.className = `message-bubble ${type}`;
+  messageBubble.textContent = content;
+
+  const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const metaElement = document.createElement('div');
+  metaElement.className = 'message-meta';
+  metaElement.textContent = timestamp;
+
+  messageBubble.appendChild(metaElement);
+  messageContainer.appendChild(messageBubble);
+
+  return messageContainer;
+}
+
+// Show typing indicator
+function showTypingIndicator() {
+  const typingDiv = document.createElement('div');
+  typingDiv.className = 'typing-indicator';
+  typingDiv.id = 'typingIndicator';
+  typingDiv.innerHTML = `
+    <span>L'Oréal Assistant is typing</span>
+    <div class="typing-dots">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  `;
+  chatWindow.appendChild(typingDiv);
+  scrollToBottom();
+}
+
+// Remove typing indicator
+function removeTypingIndicator() {
+  const typingIndicator = document.getElementById('typingIndicator');
+  if (typingIndicator) {
+    typingIndicator.remove();
+  }
+}
+
+// Scroll to bottom of chat
+function scrollToBottom() {
+  chatWindow.scrollTop = chatWindow.scrollHeight;
+}
+
+// Extract user's name from their message for personalization
+function extractUserName(message) {
+  const lowerMessage = message.toLowerCase();
+  
+  // Look for common patterns
+  const namePatterns = [
+    /my name is ([a-z]+)/i,
+    /i'm ([a-z]+)/i,
+    /i am ([a-z]+)/i,
+    /call me ([a-z]+)/i
+  ];
+  
+  for (const pattern of namePatterns) {
+    const match = message.match(pattern);
+    if (match && match[1] && match[1].length > 1) {
+      return match[1].charAt(0).toUpperCase() + match[1].slice(1).toLowerCase();
+    }
+  }
+  
+  return null;
+}
+
+// Handle form submit
+chatForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  
+  const message = userInput.value.trim();
+  if (!message) return;
+
+  // Extract user name if mentioned (LevelUp feature)
+  if (!userName) {
+    const extractedName = extractUserName(message);
+    if (extractedName) {
+      userName = extractedName;
+    }
+  }
+
+  // Add user message to chat (LevelUp feature)
+  const userMessage = createMessageElement(message, 'user');
+  chatWindow.appendChild(userMessage);
+  
+  // Clear input and disable form
+  userInput.value = "";
+  sendBtn.disabled = true;
+  userInput.disabled = true;
+  
+  // Show typing indicator
+  showTypingIndicator();
+  
+  // Add user message to conversation history
+  conversationHistory.push({
+    role: "user",
+    content: message
+  });
+
+  // Simulate realistic response delay (1.5-3 seconds)
+  const responseDelay = 1500 + Math.random() * 1500;
+  await new Promise(resolve => setTimeout(resolve, responseDelay));
+
+  try {
+    // Replace 'YOUR_HF_API_KEY_HERE' with your Hugging Face API key
+    const HF_API_KEY = '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';
+    
+    let aiResponse = "";
+    let useAPI = HF_API_KEY && HF_API_KEY !== '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';
+    
+    if (useAPI) {
+      try {
+        // Prepare conversation history for the API (last 10 messages + system prompt)
+        const recentHistory = conversationHistory.slice(-10);
+        const messages = [conversationHistory[0], ...recentHistory]; // Include system prompt + recent messages
+        
+        // Use Featherless AI through Hugging Face
+        const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Magistral-Small-2506', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${HF_API_KEY}`,
+            'Content-Type': 'application/json',
+            'x-use-inference-provider': 'featherless-ai'
+          },
+          body: JSON.stringify({
+            model: "mistralai/Magistral-Small-2506",
+            messages: messages,
+            max_tokens: 200,
+            temperature: 0.7,
+            top_p: 0.9,
+            stream: false
+          })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log('API Response:', data); // For debugging
+          
+          if (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) {
+            aiResponse = data.choices[0].message.content.trim();
+            
+            // Ensure response stays on-topic and is appropriate length
+            if (aiResponse.length < 10 || !isBeautyRelated(aiResponse)) {
+              console.log('Response too short or off-topic, using fallback');
+              aiResponse = "";
+            }
+          } else {
+            console.log('Unexpected API response format:', data);
+            aiResponse = "";
+          }
+        } else {
+          console.log('API response not OK:', response.status, response.statusText);
+          const errorText = await response.text();
+          console.log('Error details:', errorText);
+          aiResponse = "";
+        }
+      } catch (apiError) {
+        console.log('API call failed:', apiError);
+        aiResponse = "";
+      }
+    }
+    
+    // Use contextual response if API failed or no API key
+    if (!aiResponse) {
+      console.log('Using contextual response');
+      aiResponse = generateContextualResponse(message);
+    }
+    
+    removeTypingIndicator();
+    
+    // Personalize response with user's name if we have it
+    if (userName && !aiResponse.includes(userName)) {
+      aiResponse = aiResponse.replace(/\b(Hi|Hello|Hey)\b/gi, `Hi ${userName}`);
+    }
+    
+    // Add AI response to chat (LevelUp feature - shows user question above)
+    const aiMessage = createMessageElement(aiResponse, 'ai', message);
+    chatWindow.appendChild(aiMessage);
+    
+    // Add AI response to conversation history
+    conversationHistory.push({
+      role: "assistant",
+      content: aiResponse
+    });
+    
+    // Keep conversation history manageable (last 20 messages + system prompt)
+    if (conversationHistory.length > 21) {
+      conversationHistory = [conversationHistory[0], ...conversationHistory.slice(-20)];
+    }
+    
+  } catch (error) {
+    console.error('Outer error:', error);
+    removeTypingIndicator();
+    
+    // Always provide a helpful response
+    let fallbackResponse = generateContextualResponse(message);
+    
+    const errorMessage = createMessageElement(fallbackResponse, 'ai', message);
+    chatWindow.appendChild(errorMessage);
+    
+    conversationHistory.push({
+      role: "assistant",
+      content: fallbackResponse
+    });
+  }
+  
+  // Re-enable form
+  sendBtn.disabled = false;
+  userInput.disabled = false;
+  userInput.focus();
+  scrollToBottom();
+});
+
+// Helper function to check if response is beauty-related
+function isBeautyRelated(text) {
+  const beautyKeywords = ['beauty', 'makeup', 'skincare', 'haircare', 'fragrance', 'loreal', 'cosmetic', 'skin', 'hair', 'product', 'routine'];
+  const lowerText = text.toLowerCase();
+  return beautyKeywords.some(keyword => lowerText.includes(keyword)) || text.length > 20;
+}
+
+// Generate contextual response based on user input
+function generateContextualResponse(userMessage) {
+  const lowerMessage = userMessage.toLowerCase();
+  
+  // Greeting responses
+  if (lowerMessage.includes('hello') || lowerMessage.includes('hi') || lowerMessage.includes('hey')) {
+    const greetings = [
+      "Hello! I'm excited to help you explore L'Oréal's amazing beauty products! Are you interested in makeup, skincare, haircare, or fragrances today?",
+      "Hi there! Welcome to L'Oréal! I'm here to help you find the perfect beauty products. What are you looking for today?",
+      "Hey! I'm your L'Oréal beauty expert. Whether you need makeup tips, skincare advice, or product recommendations, I'm here to help!"
+    ];
+    return greetings[Math.floor(Math.random() * greetings.length)];
+  }
+  
+  // How are you responses
+  if (lowerMessage.includes('how are you') || lowerMessage.includes('how do you feel')) {
+    return "I'm doing great and I'm excited to help you with L'Oréal products! I love talking about beauty and helping people find their perfect routine. What beauty goals are you working on?";
+  }
+  
+  // About L'Oréal
+  if (lowerMessage.includes('what') && (lowerMessage.includes('loreal') || lowerMessage.includes("l'oreal"))) {
+    return "L'Oréal is the world's leading beauty company! We create amazing makeup, skincare, haircare, and fragrances. From iconic brands like Maybelline and Lancôme to innovative products that help everyone feel beautiful - that's what we're all about. What L'Oréal products interest you most?";
+  }
+  
+  // Makeup queries
+  if (lowerMessage.includes('makeup') || lowerMessage.includes('cosmetic') || lowerMessage.includes('foundation') || lowerMessage.includes('lipstick')) {
+    return "I'd love to help you with L'Oréal makeup! We have incredible foundations, vibrant lipsticks, stunning eyeshadows, and more. Are you looking for everyday wear or something special? Tell me about your skin tone and style preferences!";
+  }
+  
+  // Skincare queries
+  if (lowerMessage.includes('skincare') || lowerMessage.includes('skin') || lowerMessage.includes('moisturizer') || lowerMessage.includes('cleanser')) {
+    return "L'Oréal's skincare is amazing! We have products for every skin type and concern. What's your skin type - oily, dry, combination, or sensitive? And what are your main skin goals - hydration, anti-aging, acne care, or brightening?";
+  }
+  
+  // Haircare queries
+  if (lowerMessage.includes('hair') || lowerMessage.includes('shampoo') || lowerMessage.includes('conditioner')) {
+    return "L'Oréal's haircare line is fantastic! We have solutions for every hair type and concern. What's your hair like - straight, curly, colored, damaged? Are you looking for volume, repair, color protection, or something else?";
+  }
+  
+  // Fragrance queries
+  if (lowerMessage.includes('fragrance') || lowerMessage.includes('perfume') || lowerMessage.includes('scent')) {
+    return "L'Oréal has beautiful fragrances! Do you prefer fresh and light scents for daytime, or something more bold and sophisticated for evenings? I can help you find the perfect fragrance to match your personality!";
+  }
+  
+  // Routine queries
+  if (lowerMessage.includes('routine') || lowerMessage.includes('regimen') || lowerMessage.includes('steps')) {
+    return "I'd love to help create a personalized beauty routine for you! Are you focusing on skincare, makeup, haircare, or a complete routine? Tell me about your lifestyle and beauty goals so I can recommend the best L'Oréal products!";
+  }
+  
+  // Product recommendation queries
+  if (lowerMessage.includes('recommend') || lowerMessage.includes('suggest') || lowerMessage.includes('best') || lowerMessage.includes('good')) {
+    return "I'd be happy to recommend L'Oréal products for you! To give you the best suggestions, tell me: Are you interested in makeup, skincare, haircare, or fragrances? And what specific needs or concerns do you have?";
+  }
+  
+  // Color/shade queries
+  if (lowerMessage.includes('color') || lowerMessage.includes('shade') || lowerMessage.includes('tone')) {
+    return "Great question about colors! L'Oréal has an amazing range of shades for every skin tone. Are you looking for foundation colors, lipstick shades, eyeshadow palettes, or hair color? I can help you find your perfect match!";
+  }
+  
+  // Price/budget queries
+  if (lowerMessage.includes('price') || lowerMessage.includes('cost') || lowerMessage.includes('budget') || lowerMessage.includes('cheap')) {
+    return "L'Oréal offers products at different price points to fit every budget! From our drugstore lines like Maybelline to luxury options like Lancôme. What's your budget range and what type of products are you looking for?";
+  }
+  
+  // Sensitive skin queries
+  if (lowerMessage.includes('sensitive') || lowerMessage.includes('allergic') || lowerMessage.includes('reaction')) {
+    return "L'Oréal has many products formulated for sensitive skin! We offer hypoallergenic and dermatologist-tested options. What specific sensitivities do you have, and are you looking for skincare, makeup, or haircare products?";
+  }
+  
+  // Anti-aging queries
+  if (lowerMessage.includes('aging') || lowerMessage.includes('wrinkle') || lowerMessage.includes('anti-age')) {
+    return "L'Oréal's anti-aging products are incredible! Our Revitalift and Age Perfect lines are specially designed to target signs of aging. Are you looking for serums, moisturizers, or makeup that also provides anti-aging benefits?";
+  }
+  
+  // Default response for beauty-related or unclear queries
+  const defaultResponses = [
+    "I'm here to help you discover L'Oréal's amazing range of beauty products! Whether you're interested in makeup, skincare, haircare, or fragrances, I can provide personalized recommendations. What beauty area interests you most?",
+    "Welcome to L'Oréal! I specialize in helping you find the perfect beauty products and routines. Tell me about your beauty goals - are you looking for everyday essentials or something special?",
+    "I'd love to help you explore L'Oréal's incredible product range! From makeup that makes you feel confident to skincare that gives you a healthy glow - what would you like to learn about today?"
+  ];
+  
+  return defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
+}
+
+// Allow Enter key to send message
+userInput.addEventListener("keypress", (e) => {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    chatForm.dispatchEvent(new Event('submit'));
+  }
+});
+
+// Initialize chat
+addInitialMessage();
+userInput.focus();
+    </script>
+  </body>
+</html>
